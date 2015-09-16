@@ -1,8 +1,9 @@
 #include <Servo.h>
+#include <Wire.h>
 #include <Motor298.h>
 #include "pitches.h"
 #include "irrecvnec.h"
-
+#include "gy273.h"
 
 #define BT_ENABLE (1)
 
@@ -32,7 +33,10 @@ int maximumRange = 200; // Maximum range needed
 int minimumRange = 0; // Minimum range needed
 
 
-Servo myservo;
+static Servo myservo;
+static Gy273 gy273;
+static Motor298 motor;
+
 
 
 const int LED_PIN = 13;
@@ -44,7 +48,6 @@ int pin = 1234;
 char* name = "AutoRobot";
 
 void PlaySound(int sound);
-Motor298 motor;
 
 
 // Motor driver L298N driver
@@ -159,10 +162,11 @@ void setup()
   pinMode (USTriggerPin, OUTPUT);
   pinMode (USEchoPin, INPUT) ;
 
-
   motor.stop(255);
+  gy273.Init();
 
-  Serial.println("Robot versie 0.50");
+  Serial.println("Robot versie 0.51");
+
 }
 
 
@@ -226,8 +230,7 @@ void SetLEDs(int la )
     case 3:
       digitalWrite(A0,1);
       digitalWrite(A1,1);
-      break;
-      
+      break;      
   }
 }
 
@@ -475,6 +478,36 @@ void loop()
     
     switch ( inp )
     {
+
+      case 'c': 
+        for ( int i = 0; i< 100; i++ )
+        {
+          int offsetX = 30;
+          int offsetY = 130;
+          Gy273::Vector3i vec = gy273.Update();
+  
+          Serial.print(vec.X + offsetX);
+          Serial.print("\t");
+          Serial.print(vec.Y + offsetY);
+          Serial.print("\t");
+          Serial.print(vec.Z);
+          Serial.println();
+          delay(200);
+        }
+        break;
+
+      case 'v': 
+        for ( int i = 0; i< 100; i++ )
+        {
+          int offsetX = 30;
+          int offsetY = 130;
+          float angle = gy273.GetHeading(offsetX, offsetY);
+  
+          Serial.print(angle);
+          Serial.println();
+          delay(200);
+        }
+        break;      
       case 'w': ExecuteAction(IR_KEY_UP);    break;
       case 'a': ExecuteAction(IR_KEY_LEFT);  break;            
       case 's': ExecuteAction(IR_KEY_DOWN);  break;
