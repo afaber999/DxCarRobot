@@ -26,7 +26,6 @@ int speedPinB = 6;
 const int USServoPin = 9;
 const int USTriggerPin = 12;
 const int USEchoPin = 13;
-
 const int IRRecvPin = 8;
 
 int maximumRange = 200; // Maximum range needed
@@ -165,8 +164,12 @@ void setup()
   motor.stop(255);
   gy273.Init();
 
-  Serial.println("Robot versie 0.51");
+  Serial.println("Robot versie 0.53");
 
+  while (Serial.available() > 0) 
+  {
+    int inp = Serial.read();
+  }
 }
 
 
@@ -189,10 +192,6 @@ void ServoAtAngle(int angle)
   Serial.print(angle, DEC);
   myservo.write( angle ); 
 }
-
-
-const int buzzerPin = 10;
-
 
 static long SetMotorStopTime(long intervalInMs)
 {
@@ -302,7 +301,7 @@ void SelfDrive()
         if( dist_C >= distancelimit) 
         {
           SetLEDs(3);    
-          motor.onFwd(0,180); 
+          motor.onFwd(Motor_298::Motor_LR,180); 
         }
       break;
         
@@ -333,23 +332,23 @@ void SelfDrive()
         }
         else if(  (dist_FL > sidedistancelimit) ) 
         {
-            motor.stop(255);
+            motor.stop(Motor_298::Motor_LR);
             motor.turnLeft(255);
             SetLEDs(1);
             Serial.print("turn left long"); 
             delay(500);
-            motor.stop(255);
+            motor.stop(Motor_298::Motor_LR);
             SetLEDs(0);
             
             
         } else if( ( dist_FR > sidedistancelimit )) 
         {
-            motor.stop(255);          
+            motor.stop(Motor_298::Motor_LR);          
             motor.turnRight(255);
             SetLEDs(1);
             Serial.println("turn right long"); 
             delay(500);
-            motor.stop(255);
+            motor.stop(Motor_298::Motor_LR);
             SetLEDs(0);
           }
           else 
@@ -360,7 +359,7 @@ void SelfDrive()
             motor.turnRight(255);
             SetLEDs(1);
             delay(800);
-            motor.stop(255);
+            motor.stop(Motor_298::Motor_LR);
             SetLEDs(0);
         }	
         //delay(15000);
@@ -380,13 +379,13 @@ static void ExecuteAction( uint8_t code )
   {
     case IR_KEY_UP:
       ServoAtAngle(0);
-      motor.onFwd(0,200);
+      motor.onFwd(Motor_298::Motor_LR,200);
       SetLEDs(3);
       SetMotorStopTime(900);
     break;
     case IR_KEY_DOWN:
       ServoAtAngle(0);
-      motor.onRev(0,200);
+      motor.onRev(Motor_298::Motor_LR,200);
       SetLEDs(3);
       SetMotorStopTime(900);
     break;
@@ -418,20 +417,21 @@ static void ExecuteAction( uint8_t code )
     break;
   
     case IR_KEY_0: 
-      motor.stop(255);
+      motor.stop(Motor_298::Motor_LR);
       motor.turnLeft(255);
       delay(1500);
       motor.turnRight(255);
       delay(1500);
       
       Serial.print("Servo Snelle draai");
-      myservo.write( 0 ); 
+      myservo.write( servo_angle_FR ); 
       delay(500);
-      myservo.write( 180 ); 
+      myservo.write( servo_angle_C ); 
       delay(500);
-      myservo.write( 0 ); 
+      myservo.write( servo_angle_FL ); 
       delay(500);
-      motor.stop(255);
+      motor.stop(Motor_298::Motor_LR);
+      myservo.write( servo_angle_C ); 
     break;
   
     case IR_KEY_7:
@@ -446,7 +446,7 @@ static void ExecuteAction( uint8_t code )
         myservo.write( idx ); 
         delay(50);
       }
-      myservo.write( 90 ); 
+      myservo.write( servo_angle_C ); 
     break;
   } 
 }
@@ -459,7 +459,7 @@ void loop()
 {
   if ( millis() > motor_stop_time )
   {
-    motor.stop(255);
+    motor.stop(Motor_298::Motor_LR);
     SetLEDs(0);
     autodrive = false;
     motor_stop_time = NO_MOTOR_STOP;
@@ -526,7 +526,7 @@ void loop()
 
       /***********************Backward****************************/
       case 'B': 
-            motor.fwdRight(defaultSpeed);
+            motor.onRev(Motor_298::Motor_LR,defaultSpeed);
             break;
 
       /**********************Backward Left************************/
@@ -629,12 +629,13 @@ void loop()
         break;
       case '(':
         Serial.print("Servo Snelle draai");
-        myservo.write( 0 ); 
+        myservo.write( servo_angle_FR ); 
         delay(500);
-        myservo.write( 180 ); 
+        myservo.write( servo_angle_FL ); 
         delay(500);
-        myservo.write( 0 ); 
+        myservo.write( servo_angle_FR ); 
         delay(500);
+        myservo.write( servo_angle_C ); 
         break;
 
      case 'p':
@@ -653,7 +654,7 @@ void loop()
      break;
     }
   }
-//  
+    
   if ( autodrive )
   {
     SelfDrive();
