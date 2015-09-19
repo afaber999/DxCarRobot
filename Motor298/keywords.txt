@@ -1,0 +1,11 @@
+Motor	KEYWORD1
+onFwd	KEYWORD2
+onRev	KEYWORD2
+off	KEYWORD2
+stop	KEYWORD2
+fwdRight	KEYWORD2
+fwdLeft	KEYWORD2
+revRight	KEYWORD2
+revLeft	KEYWORD2
+turnRight	KEYWORD2
+turnLeft	KEYWORD2

@@ -457,13 +457,13 @@ int snd = 0;
 
 void loop() 
 {
-  if ( millis() > motor_stop_time )
-  {
-    motor.stop(255);
-    SetLEDs(0);
-    autodrive = false;
-    motor_stop_time = NO_MOTOR_STOP;
-  }
+//  if ( millis() > motor_stop_time )
+//  {
+//    motor.stop(255);
+//    SetLEDs(0);
+//    autodrive = false;
+//    motor_stop_time = NO_MOTOR_STOP;
+//  }
 
 
   // ========================= IR RECV ==========================================================
@@ -653,11 +653,11 @@ void loop()
      break;
     }
   }
-//  
-  if ( autodrive )
-  {
-    SelfDrive();
-  }
+  
+//  if ( autodrive )
+//  {
+//    SelfDrive();
+//  }
 }
 
 
